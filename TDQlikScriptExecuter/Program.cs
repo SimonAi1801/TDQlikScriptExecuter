@@ -19,12 +19,11 @@ namespace TDQlikScriptExecuter
         static async Task Main()
         {
             License license = FileManipulator.ReadLicenseFromLocal();
-            license.MacAddress =
-                                (
+            license.MacAddress = (
                                     from nic in NetworkInterface.GetAllNetworkInterfaces()
                                     where nic.OperationalStatus == OperationalStatus.Up
                                     select nic.GetPhysicalAddress().ToString()
-                                ).FirstOrDefault();
+                                 ).FirstOrDefault();
 
             if (await VerifyLicense(license) == false && license != null)
             {
@@ -84,7 +83,7 @@ namespace TDQlikScriptExecuter
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://localhost:5001/api/License");  //Ändern!!
+                    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");  //Ändern!!
 
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -96,7 +95,7 @@ namespace TDQlikScriptExecuter
                     HttpResponseMessage response = new HttpResponseMessage();
 
                     // HTTP get  
-                    response = await client.GetAsync(client.BaseAddress + $"/vGiLLJ7Kih/{license.MacAddress}/MIGU/getVerified");
+                    response = await client.GetAsync(client.BaseAddress + $"pokemon/ditto");
                     string stringResult = await response.Content.ReadAsStringAsync();
                     var rarLicense = JsonSerializer.Deserialize<License>(stringResult);
 
