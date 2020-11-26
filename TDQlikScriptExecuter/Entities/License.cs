@@ -22,7 +22,7 @@ namespace TDQlikScriptExecuter.Entities
 
         public override string ToString()
         {
-            return $"Key={Key};ValidUntil={ValidUntil}";
+            return $"Key={Key};ValidUntil={ValidUntil};Customer={CustomerName}";
         }
     }
 }

@@ -83,7 +83,7 @@ namespace TDQlikScriptExecuter
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");  //Ändern!!
+                    client.BaseAddress = new Uri("http://10.10.0.5:31098/api/License/");  //Ändern!!
 
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -95,7 +95,7 @@ namespace TDQlikScriptExecuter
                     HttpResponseMessage response = new HttpResponseMessage();
 
                     // HTTP get  
-                    response = await client.GetAsync(client.BaseAddress + $"pokemon/ditto");
+                    response = await client.GetAsync(client.BaseAddress + $"{license.Key}/{license.MacAddress}/{license.CustomerName}/getVerified");
                     string stringResult = await response.Content.ReadAsStringAsync();
                     var rarLicense = JsonSerializer.Deserialize<License>(stringResult);
 
