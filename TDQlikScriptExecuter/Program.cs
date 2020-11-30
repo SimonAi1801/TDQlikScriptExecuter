@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using TDQlikScriptExecuter.Entities;
 
@@ -18,14 +19,16 @@ namespace TDQlikScriptExecuter
     {
         static async Task Main()
         {
-            License license = FileManipulator.ReadLicenseFromLocal();
+            License license = FileManipulator.ReadLicense();
             license.MacAddress = (
                                     from nic in NetworkInterface.GetAllNetworkInterfaces()
                                     where nic.OperationalStatus == OperationalStatus.Up
                                     select nic.GetPhysicalAddress().ToString()
                                  ).FirstOrDefault();
 
-            if (await VerifyLicense(license) == false && license != null)
+            var isValid = await VerifyLicense(license);
+   
+            if (!isValid && license != null)
             {
                 throw new Exception("Die eingegebene Lizenz ist falsch!");
             }
@@ -38,7 +41,8 @@ namespace TDQlikScriptExecuter
                 FileManipulator.WriteLicenseToLocal(license);
             }
 
-            CustomInformation custom = FileManipulator.GetCustomInfromation();
+            CustomInformation custom = FileManipulator.ReadCustomInfromation();
+            FileManipulator.ModifyQvs();
             byte[] key = Convert.FromBase64String("3W42Ped3yWB+qMRZjib4Df/5kT+rt6YBvkR/TKSxAzA=");
             string decryptedScript = DecryptSource(key);
             ILocation location = await ConnectWithProxyAsnyc(custom);
@@ -83,7 +87,7 @@ namespace TDQlikScriptExecuter
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("http://10.10.0.5:31098/api/License/");  //Ändern!!
+                    client.BaseAddress = new Uri("http://qlikdemo.trusteddecisions.com:31098/api/License/");
 
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -93,7 +97,6 @@ namespace TDQlikScriptExecuter
 
                     // Initialization.  
                     HttpResponseMessage response = new HttpResponseMessage();
-
                     // HTTP get  
                     response = await client.GetAsync(client.BaseAddress + $"{license.Key}/{license.MacAddress}/{license.CustomerName}/getVerified");
                     string stringResult = await response.Content.ReadAsStringAsync();

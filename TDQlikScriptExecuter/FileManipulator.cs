@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using TDQlikScriptExecuter.Entities;
 
 namespace TDQlikScriptExecuter
@@ -7,20 +9,24 @@ namespace TDQlikScriptExecuter
     {
         private static string _customInformationFilePath = @"C:\ProgramData\TrustedDecisions\Config\CustomInformation.ini";
         private const string _licenseFilePath = @"C:\ProgramData\TrustedDecisions\License\License.txt";
+        private const string _connectorFilePath = @"C:\ProgramData\TrustedDecisions\Config\Connection.qvs";
 
-        public static CustomInformation GetCustomInfromation()
+        public static CustomInformation ReadCustomInfromation()
         {
             string[] lines = GetInformationFromFile(_customInformationFilePath).Split("\r\n");
             CustomInformation customInformation = new CustomInformation();
 
             foreach (var item in lines)
             {
-                SetToCustomInformationProperty(item.Split("="), customInformation);
+                if (!string.IsNullOrWhiteSpace(item))
+                {
+                    SetToCustomInformationProperty(item.Split("="), customInformation);
+                }
             }
             return customInformation;
         }
 
-        public static License ReadLicenseFromLocal()
+        public static License ReadLicense()
         {
             string lines = GetInformationFromFile(_licenseFilePath);
 
@@ -35,17 +41,34 @@ namespace TDQlikScriptExecuter
             foreach (var item in parts)
             {
                 string[] collumns = item.Split("=");
-
+                string[] temp = collumns[1].Split((char)92);
                 if (collumns[0].Equals("Customer"))
                 {
-                    myLicense.CustomerName = collumns[1];
+                    myLicense.CustomerName = temp[0];
                 }
                 else if (collumns[0].Equals("Key"))
                 {
-                    myLicense.Key = collumns[1];
+                    myLicense.Key = temp[0];
                 }
             }
             return myLicense;
+        }
+
+        public static void ModifyQvs()
+        {
+            string lines = GetInformationFromFile(_connectorFilePath);
+            StringBuilder sb = new StringBuilder();
+            string[] parts = lines.Split(';');
+
+            foreach (var item in parts)
+            {
+                string[] tmp = item.Split((char)92);
+                if (!string.IsNullOrWhiteSpace(item))
+                {
+                    sb.AppendLine(tmp[0] + ';');
+                }
+            }
+            WriteInformationToFile(sb.ToString(), _connectorFilePath);
         }
 
         public static string ModifyPreviousScript(string previousScript)
@@ -112,36 +135,38 @@ namespace TDQlikScriptExecuter
 
         private static void SetToCustomInformationProperty(string[] parts, CustomInformation customInformation)
         {
+            string[] tmp = parts[1].Split((char)92);
+
             switch (parts[0].ToLower())
             {
                 case "appid":
                     {
-                        customInformation.AppId = parts[1];
+                        customInformation.AppId = tmp[0];
                         break;
                     }
                 case "url":
                     {
-                        customInformation.Url = parts[1];
+                        customInformation.Url = tmp[0];
                         break;
                     }
                 case "headname":
                     {
-                        customInformation.HeadName = parts[1];
+                        customInformation.HeadName = tmp[0];
                         break;
                     }
                 case "userdirectory":
                     {
-                        customInformation.UserDirectory = parts[1];
+                        customInformation.UserDirectory = tmp[0];
                         break;
                     }
                 case "userid":
                     {
-                        customInformation.UserId = parts[1];
+                        customInformation.UserId = tmp[0];
                         break;
                     }
                 case "proxypath":
                     {
-                        customInformation.ProxyPath = parts[1];
+                        customInformation.ProxyPath = tmp[0];
                         break;
                     }
             }
