@@ -38,11 +38,11 @@ namespace TDQlikScriptExecuter
             }
             else
             {
+                Thread.Sleep(5000);
                 FileManipulator.WriteLicenseToLocal(license);
             }
 
-            CustomInformation custom = FileManipulator.ReadCustomInfromation();
-            FileManipulator.ModifyQvs();
+            CustomInformation custom = FileManipulator.GetCustomInfromation();
             byte[] key = Convert.FromBase64String("3W42Ped3yWB+qMRZjib4Df/5kT+rt6YBvkR/TKSxAzA=");
             string decryptedScript = DecryptSource(key);
             ILocation location = await ConnectWithProxyAsnyc(custom);
