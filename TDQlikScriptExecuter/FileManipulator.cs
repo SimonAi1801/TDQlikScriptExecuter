@@ -41,14 +41,14 @@ namespace TDQlikScriptExecuter
             foreach (var item in parts)
             {
                 string[] collumns = item.Split("=");
-                string[] temp = collumns[1].Split((char)92);
+                //string[] temp = collumns[1].Split((char)92);
                 if (collumns[0].Equals("Customer"))
                 {
-                    myLicense.CustomerName = temp[0];
+                    myLicense.CustomerName = collumns[1];
                 }
                 else if (collumns[0].Equals("Key"))
                 {
-                    myLicense.Key = temp[0];
+                    myLicense.Key = collumns[1];
                 }
             }
             return myLicense;
@@ -62,10 +62,10 @@ namespace TDQlikScriptExecuter
 
             foreach (var item in parts)
             {
-                string[] tmp = item.Split((char)92);
+                //string[] tmp = item.Split((char)92);
                 if (!string.IsNullOrWhiteSpace(item))
                 {
-                    sb.AppendLine(tmp[0] + ';');
+                    sb.AppendLine(item + ';');
                 }
             }
             WriteInformationToFile(sb.ToString(), _connectorFilePath);
@@ -135,38 +135,38 @@ namespace TDQlikScriptExecuter
 
         private static void SetToCustomInformationProperty(string[] parts, CustomInformation customInformation)
         {
-            string[] tmp = parts[1].Split((char)92);
+            //string[] tmp = parts[1].Split((char)92);
 
             switch (parts[0].ToLower())
             {
                 case "appid":
                     {
-                        customInformation.AppId = tmp[0];
+                        customInformation.AppId = parts[1];
                         break;
                     }
                 case "url":
                     {
-                        customInformation.Url = tmp[0];
+                        customInformation.Url = parts[1];
                         break;
                     }
                 case "headname":
                     {
-                        customInformation.HeadName = tmp[0];
+                        customInformation.HeadName = parts[1];
                         break;
                     }
                 case "userdirectory":
                     {
-                        customInformation.UserDirectory = tmp[0];
+                        customInformation.UserDirectory = parts[1];
                         break;
                     }
                 case "userid":
                     {
-                        customInformation.UserId = tmp[0];
+                        customInformation.UserId = parts[1];
                         break;
                     }
                 case "proxypath":
                     {
-                        customInformation.ProxyPath = tmp[0];
+                        customInformation.ProxyPath = parts[1];
                         break;
                     }
             }
