@@ -46,23 +46,23 @@ namespace TDQlikScriptExecuter
             byte[] key = Convert.FromBase64String("QRZbi39oJei+Zz6F0Ht04Xwu3jx4cnDjaaEkJJdCIhs=");
             string decryptedScript = DecryptSource(key);
             ILocation location = await ConnectWithProxyAsnyc(custom);
-            File.WriteAllText(@"C:\Work\ScriptExecuter\stage0.txt", location.ToString());
-            Thread.Sleep(5000);
+            //File.WriteAllText(@"C:\Work\ScriptExecuter\stage0.txt", location.ToString());
+            //Thread.Sleep(5000);
             try
             {
 
-                File.WriteAllText(@"C:\Work\ScriptExecuter\stageId.txt", custom.ToString());
+                //File.WriteAllText(@"C:\Work\ScriptExecuter\stageId.txt", custom.ToString());
                 IApp app = location.App(location.AppWithId($"{custom.AppId}"));
-                File.WriteAllText(@"C:\Work\ScriptExecuter\stage1", "After App Reload");
+                //File.WriteAllText(@"C:\Work\ScriptExecuter\stage1", "After App Reload");
                 string previousScript = FileManipulator.ModifyPreviousScript(await app.GetScriptAsync());
-                Thread.Sleep(5000);
-                File.WriteAllText(@"C:\Work\ScriptExecuter\stage2.txt", "Get Script");
+                //Thread.Sleep(5000);
+                //File.WriteAllText(@"C:\Work\ScriptExecuter\stage2.txt", "Get Script");
                 await app.SetScriptAsync(decryptedScript + previousScript);
                 DoReloadExResult reloadEx = await app.DoReloadExAsync();
                 //File.WriteAllText(@"C:\Work\ScriptExecuter\stage3.txt", "Reload");
                 if (reloadEx.Success)
                 {
-                    Thread.Sleep(5000);
+                    //Thread.Sleep(5000);
                     await app.SetScriptAsync(await app.GetEmptyScriptAsync() + previousScript);
                     await app.DoSaveAsync();
                     FileManipulator.ModifyLogFile(reloadEx.ScriptLogFile);
@@ -76,14 +76,14 @@ namespace TDQlikScriptExecuter
             }
             catch (CommunicationErrorException cex)
             {
-                File.WriteAllText(@"C:\Work\ScriptExecuter\errorCommunication.txt", cex.Message + cex.InnerException.Message);
+                File.WriteAllText(@$"{Assembly.GetExecutingAssembly().Location}\ErrorCommunicationMessage.txt", "Error:" + cex.Message + "InnerError:" +  cex.InnerException.Message);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Kann sich nicht mit Qlik Sense verbinden! Überprüfe ob Qlik Sense laeuft." + Environment.NewLine + cex.Message);
                 Console.ResetColor();
             }
             catch (Exception ex)
             {
-                File.WriteAllText(@"C:\Work\ScriptExecuter\error.txt", ex.Message);
+                File.WriteAllText(@$"{Assembly.GetExecutingAssembly().Location}\ErrorMessage.txt", "Error:" + ex.Message + "InnerError:" + ex.InnerException.Message);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Allgemeiner Fehler: " + Environment.NewLine + ex.Message);
                 Console.ResetColor();
